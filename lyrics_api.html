@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyrics Finder</title>
+</head>
+<body>
+    <h1>Lyrics Finder</h1>
+    <div>
+        <label for="artist">Artist:</label>
+        <input type="text" id="artist" required>
+    </div>
+    <div>
+        <label for="title">Title:</label>
+        <input type="text" id="title" required>
+    </div>
+    <button onclick="searchLyrics()">Get Lyrics</button>
+    <div id="lyrics"></div>
+
+    <script>
+
+// Search function
+function searchLyrics() {
+    const artist = document.getElementById('artist').value.trim();
+    const title = document.getElementById('title').value.trim();
+
+    // Check both fields are entered
+    if (!artist || !title) {
+        alert('Please enter both artist and title.');
+        return;
+    }
+
+    // Create request
+    const request = new XMLHttpRequest();
+    const url = `https://api.lyrics.ovh/v1/${artist}/${title}`;
+
+    // Request to API & error handling
+    request.open('GET', url);
+    request.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                const response = JSON.parse(this.responseText);
+                displayLyrics(response.lyrics);
+            } else {
+                displayError('Lyrics not found. Please try again.');
+            }
+        }
+    };
+    request.send();
+}
+
+// Function to display lyrics
+function displayLyrics(lyrics) {
+    const lyricsContainer = document.getElementById('lyrics');
+    lyricsContainer.textContent = '';
+    const pre = document.createElement('pre');
+    pre.textContent = lyrics;
+    lyricsContainer.appendChild(pre);
+}
+
+// Error function
+function displayError(message) {
+    const lyricsContainer = document.getElementById('lyrics');
+    lyricsContainer.textContent = message;
+}
+
+    </script>
+</body>
+</html>
+
